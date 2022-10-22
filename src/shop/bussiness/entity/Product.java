@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Product implements Serializable {
-    private int productId;
+    private String productId;
     private String productName;
     private float productPrice;
     private float productDiscount;
@@ -21,7 +21,7 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(int productId, String productName, float productPrice, float productDiscount, float exportPriceProduct, String title, String descriptionsProduct, List<Color> colorList, List<Size> sizeList, List<Catalog> catalogList, boolean statusProduct, Date dateInputProduct) {
+    public Product(String productId, String productName, float productPrice, float productDiscount, float exportPriceProduct, String title, String descriptionsProduct, List<Color> colorList, List<Size> sizeList, List<Catalog> catalogList, boolean statusProduct, Date dateInputProduct) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
@@ -36,11 +36,11 @@ public class Product implements Serializable {
         this.dateInputProduct = dateInputProduct;
     }
 
-    public int getProductId() {
+    public String getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 
