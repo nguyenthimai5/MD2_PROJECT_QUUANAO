@@ -71,8 +71,14 @@ public class Sizeimpl implements ISize<Size,Integer> {
         System.out.println("1.Hoạt động");
         System.out.println("2.Không hoạt động");
         System.out.print("Sự lựa chọn của bạn:");
-        int choice = 0;
-        ShopValiDation.checkNumberInt(scanner, choice);
+        int choice=0;
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+
+        } catch (NumberFormatException exception) {
+            System.err.println(ShopMessage.CHECK_NUMBER);
+        }
+
         switch (choice) {
             case 1:
                 sizeNew.setSizeStatus(true);
@@ -99,6 +105,18 @@ public class Sizeimpl implements ISize<Size,Integer> {
 
     @Override
     public boolean update(Size size) {
+        List<Size> sizeList=readFromFile();
+        boolean returnSize=false;
+        for (int i = 0; i < sizeList.size(); i++) {
+            if (sizeList.get(i).getSizeId()==size.getSizeId()){
+                sizeList.set(i,size);
+                returnSize=true;
+                break;
+            }
+        }boolean result=writeToFile(sizeList);
+        if (returnSize&&result){
+            return true;
+        }
         return false;
     }
 
@@ -115,12 +133,13 @@ public class Sizeimpl implements ISize<Size,Integer> {
                 break;
             }
         }
-        if (check){
+        boolean result=writeToFile(sizeList);
+        if (check&&result){
             System.out.println(ShopMessage.CHECK_DELETE_SIZE_TRUE);
-        }else {
-            System.err.println(ShopMessage.CHECK_DELETE_SIZE_FASLE);
+            return true;
         }
-        return check;
+            System.err.println(ShopMessage.CHECK_DELETE_SIZE_FASLE);
+            return false;
 
     }
 

@@ -9,6 +9,7 @@ import shop.config.ShopConstant;
 import shop.config.ShopMessage;
 import shop.config.ShopValiDation;
 import shop.data.Fileimpl;
+import shop.pressentation.UserMenu;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class Userimpl implements IUser<User, Integer> {
         System.out.println("Tên đăng nhập:");
         do {
             String nameLogin = scanner.nextLine();
-            if (ShopValiDation.checkNameLogin(scanner, nameLogin)) {
+            if (ShopValiDation.checkNameLogin(nameLogin)) {
                 userNew.setUserName(nameLogin);
                 break;
             } else {
@@ -91,8 +92,14 @@ public class Userimpl implements IUser<User, Integer> {
         System.out.println("1.Quản trị");
         System.out.println("2.Khách hàng");
         System.out.print("Sự lựa chọn của bạn:");
-        int choice = 0;
-        ShopValiDation.checkNumberInt(scanner, choice);
+        int choice=0;
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+
+        } catch (NumberFormatException exception) {
+            System.err.println(ShopMessage.CHECK_NUMBER);
+        }
+
         switch (choice) {
             case 1:
                 userNew.setPermission(true);
@@ -112,8 +119,14 @@ public class Userimpl implements IUser<User, Integer> {
         System.out.println("2.Khoá");
         System.out.print("Sự lựa chọn của bạn:");
         int choiceStatus = 0;
-        ShopValiDation.checkNumberInt(scanner, choiceStatus);
-        switch (choice) {
+        try {
+            choiceStatus = Integer.parseInt(scanner.nextLine());
+
+        } catch (NumberFormatException exception) {
+            System.err.println(ShopMessage.CHECK_NUMBER);
+        }
+
+        switch (choiceStatus) {
             case 1:
                 userNew.setUserStatus(true);
                 break;
@@ -127,7 +140,7 @@ public class Userimpl implements IUser<User, Integer> {
         System.out.println("Email:");
         do {
             String email = scanner.nextLine();
-            if (ShopValiDation.checkEmail(scanner, email)) {
+            if (ShopValiDation.checkEmail(email)) {
                 userNew.setEmailUser(email);
                 break;
             } else {
@@ -137,7 +150,7 @@ public class Userimpl implements IUser<User, Integer> {
         System.out.print("Số điện thoại :");
         do {
             String phone = scanner.nextLine();
-            if (ShopValiDation.checkPhone(scanner, phone)) {
+            if (ShopValiDation.checkPhone( phone)) {
                 userNew.setPhoneUser(phone);
                 break;
             } else {
@@ -155,14 +168,27 @@ public class Userimpl implements IUser<User, Integer> {
         }
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         String strDate = formatter.format(user.getDate());
-        System.out.printf("%-20s%-30s%-20s%-30s%-20s",user.getUserId(),user.getUserName(),user.getPassword(),user.getFullName(),user.isPermission());
-        System.out.printf("%-30s%-30b%-30s%-30s",strDate,status,user.getEmailUser(),user.getPhoneUser());
+        System.out.printf("%-20s%-30s%-20s%-30s%-20s", user.getUserId(), user.getUserName(), user.getPassword(), user.getFullName(), user.isPermission());
+        System.out.printf("%-30s%-30b%-30s%-30s", strDate, status, user.getEmailUser(), user.getPhoneUser());
 
 
     }
 
     @Override
     public boolean update(User user) {
+        List<User> userList = readFromFile();
+        boolean returnUser = false;
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i).getUserId() == user.getUserId()) {
+                userList.set(i, user);
+                returnUser = true;
+                break;
+            }
+        }
+        boolean result = writeToFile(userList);
+        if (returnUser && result) {
+            return true;
+        }
         return false;
     }
 
@@ -178,13 +204,14 @@ public class Userimpl implements IUser<User, Integer> {
                 break;
             }
         }
-
-        if (check) {
+        boolean result = writeToFile(userList);
+        if (check && result) {
             System.out.println(ShopMessage.CHECK_DELETE_USER_TRUE);
-        } else {
-            System.err.println(ShopMessage.CHECK_DELETE_USER_FASLE);
+            return true;
         }
-        return check;
+        System.err.println(ShopMessage.CHECK_DELETE_USER_FASLE);
+
+        return false;
 
     }
 
@@ -222,31 +249,88 @@ public class Userimpl implements IUser<User, Integer> {
 
     @Override
     public Product searchByCatalogName(String catalogName) {
+        Productimpl productimpl = new Productimpl();
+        List<Product> productList = productimpl.readFromFile();
+        Catalogimpl catalogimpl = new Catalogimpl();
+        List<Catalog> catalogList = catalogimpl.readFromFile();
+
+
         return null;
     }
 
     @Override
     public List<Product> searchProductByExportPrice(float minExprortPrice, float maxExportPrice) {
-        return null;
+        Productimpl productimpl = new Productimpl();
+        List<Product> productList = productimpl.readFromFile();
+        List<Product> products = new ArrayList<>();
+        for (Product pro : productList) {
+            if (pro.getExportPriceProduct() >= minExprortPrice && pro.getExportPriceProduct() <= maxExportPrice) {
+                products.add(pro);
+            }
+        }
+
+        return products;
     }
 
     @Override
     public List<Product> searchProductByDiscount(float minDiscountPrice, float maxDiscountPrice) {
+        Productimpl productimpl = new Productimpl();
+        List<Product> productList = productimpl.readFromFile();
+        List<Product> products = new ArrayList<>();
+        for (Product pro : productList) {
+            if (pro.getProductDiscount() >= minDiscountPrice && pro.getProductDiscount() <= maxDiscountPrice) {
+                products.add(pro);
+            }
+        }
+
+        return products;
+    }
+
+    @Override
+    public boolean register(Scanner scanner) {
+        Userimpl userimpl = new Userimpl();
+        User user = userimpl.input(scanner);
+        boolean check = userimpl.create(user);
+        if (check) {
+            System.err.println(ShopMessage.CHECK_REGESTER_TRUE);
+            return true;
+        }
+        System.err.println(ShopMessage.CHECK_REGESTER_FASLE);
+        return false;
+    }
+
+    @Override
+    public boolean login(Scanner scanner) {
+        List<User> userList = readFromFile();
+        System.out.print("Tên đăng nhập:");
+        String userName = scanner.nextLine();
+        System.out.println("Mật khẩu:");
+        String password = scanner.nextLine();
+        User user = checkLogin(userName, password);
+        if (user != null) {
+           return true;
+        } else {
+            System.err.println(ShopMessage.CHECK_LOGIN);
+            login(scanner);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean changePassWord(Scanner scanner) {
+        return false;
+    }
+
+    public User checkLogin(String userName, String password) {
+        List<User> userList = readFromFile();
+        if (userList==null){
+            userList=new ArrayList<>();
+        }
+        for (User user : userList) {
+            if (user.getUserName().equalsIgnoreCase(userName) && user.getPassword().equals(password)) {
+                return user;
+            }
+        }
         return null;
-    }
-
-    @Override
-    public boolean register() {
-        return false;
-    }
-
-    @Override
-    public boolean login() {
-        return false;
-    }
-
-    @Override
-    public boolean changePassWord() {
-        return false;
     }
 }

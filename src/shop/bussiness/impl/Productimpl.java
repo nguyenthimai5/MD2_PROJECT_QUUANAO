@@ -92,7 +92,14 @@ public class Productimpl implements IProduct<Product, Integer> {
         System.out.print("Giá của sản phẩm:");
         float priceNew = 0;
         do {
-            ShopValiDation.checkNumberFloat(scanner, priceNew);
+
+            try {
+                priceNew = Float.parseFloat(scanner.nextLine());
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+
+            }
             if (priceNew > 0) {
                 productNew.setProductPrice(priceNew);
                 break;
@@ -103,7 +110,13 @@ public class Productimpl implements IProduct<Product, Integer> {
         System.out.println("% giảm giá của sản phẩm là:");
         float productDiscountNew = 0;
         do {
-            ShopValiDation.checkNumberFloat(scanner, productDiscountNew);
+            try {
+                productDiscountNew = Float.parseFloat(scanner.nextLine());
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+
+            }
             if (productDiscountNew > 0 && productDiscountNew < 100) {
                 productNew.setProductDiscount(productDiscountNew);
                 break;
@@ -144,7 +157,13 @@ public class Productimpl implements IProduct<Product, Integer> {
             }
             System.out.print("Chọn màu sắc: ");
             int choice = 0;
-            ShopValiDation.checkNumberInt(scanner, choice);
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+            }
+
             if (choice > 0 && choice < colorList.size()) {
                 boolean checkColorExist = false;
                 for (Color colorExist : product.getColorList()) {
@@ -162,43 +181,50 @@ public class Productimpl implements IProduct<Product, Integer> {
                 System.out.println("2. Không");
                 System.out.print("Lựa chọn của bạn : ");
                 int choice2 = 0;
-                do {
-                    if (ShopValiDation.checkNumberInt(scanner, choice2)) {
-                        break;
-                    } else {
-                        System.err.println(ShopMessage.CHECK_NUMBER);
-                    }
-                } while (true);
-                    if (choice2!=1){
-                        break;
-                    }
-            }else {
-                System.err.println(ShopMessage.CHECK_COLOR_PRODUCT);;
+                try {
+                    choice2 = Integer.parseInt(scanner.nextLine());
+
+                } catch (NumberFormatException exception) {
+                    System.err.println(ShopMessage.CHECK_NUMBER);
+                }
+
+                if (choice2 != 1) {
+                    break;
+                }
+            } else {
+                System.err.println(ShopMessage.CHECK_COLOR_PRODUCT);
+                ;
             }
         } while (true);
         System.out.println("Kích cỡ của sản phẩm:");
         do {
-            Sizeimpl sizeimpl=new Sizeimpl();
-            List<Size> sizeList=sizeimpl.readFromFile();
+            Sizeimpl sizeimpl = new Sizeimpl();
+            List<Size> sizeList = sizeimpl.readFromFile();
             if (sizeList == null) {
                 sizeList = new ArrayList<>();
             }
-            for (Size size:sizeList) {
-                System.out.printf("%d.%s\n",size.getSizeId(),size.getSizeName());
+            for (Size size : sizeList) {
+                System.out.printf("%d.%s\n", size.getSizeId(), size.getSizeName());
             }
             System.out.print("Chọn kích cỡ: ");
             int choiceSize = 0;
-            ShopValiDation.checkNumberInt(scanner, choiceSize);
+            try {
+                choiceSize = Integer.parseInt(scanner.nextLine());
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+            }
+
             if (choiceSize > 0 && choiceSize < sizeList.size()) {
                 boolean checkSizeExit = false;
-                for (Size sizeExit:product.getSizeList()) {
-                    if (sizeExit.getSizeId()==product.getSizeList().get(choiceSize-1).getSizeId()){
+                for (Size sizeExit : product.getSizeList()) {
+                    if (sizeExit.getSizeId() == product.getSizeList().get(choiceSize - 1).getSizeId()) {
                         checkSizeExit = true;
                     }
                 }
 
                 if (!checkSizeExit) {
-                    productNew.getSizeList().add(sizeList.get(choiceSize-1));
+                    productNew.getSizeList().add(sizeList.get(choiceSize - 1));
                 } else {
                     System.err.println("Size đã tồn tại trong sản phẩm");
                 }
@@ -207,78 +233,93 @@ public class Productimpl implements IProduct<Product, Integer> {
                 System.out.println("2. Không");
                 System.out.print("Lựa chọn của bạn : ");
                 int choice2 = 0;
-                do {
-                    if (ShopValiDation.checkNumberInt(scanner, choice2)) {
-                        break;
-                    } else {
-                        System.err.println(ShopMessage.CHECK_NUMBER);
-                    }
-                } while (true);
-                if (choice2!=1){
+                try {
+                    choice2 = Integer.parseInt(scanner.nextLine());
+
+                } catch (NumberFormatException exception) {
+                    System.err.println(ShopMessage.CHECK_NUMBER);
+                }
+                ;
+                if (choice2 != 1) {
                     break;
                 }
-            }else {
-                System.err.println(ShopMessage.CHECK_SIZE_PRODUCT);;
+            } else {
+                System.err.println(ShopMessage.CHECK_SIZE_PRODUCT);
+                ;
             }
         } while (true);
-        Catalogimpl catalogimpl=new Catalogimpl();
-        List<Catalog> catalogList=catalogimpl.readFromFile();
-        List<Catalog> listCatalogChild=new ArrayList<>();
-       if (catalogList==null){
-           catalogList=new ArrayList<>();
-       }
-       do {
-           int cnt = 1;
-           for (Catalog cat : catalogList) {
-               if (ShopValiDation.checkProductChild(cat, catalogList)) {
-                   listCatalogChild.add(cat);
-               }
-           }
-           for (Catalog cat : listCatalogChild) {
-               System.out.printf("%d. %s", cnt, cat.getCatalogName());
-               cnt++;
-           }
-           System.out.print("Chọn danh mục sản phẩm thuộc về: ");
-           int choiceCatalog = 0;
-           ShopValiDation.checkNumberInt(scanner, choiceCatalog);
-           if (choiceCatalog > 0 && choiceCatalog < catalogList.size()) {
-               boolean checkCatalog = false;
-               for (Catalog catalogExit:product.getCatalogList()) {
-                   if (catalogExit.getCatalogId()==product.getCatalogList().get(choiceCatalog-1).getCatalogId()){
-                       checkCatalog = true;
-                   }
-               }
+        Catalogimpl catalogimpl = new Catalogimpl();
+        List<Catalog> catalogList = catalogimpl.readFromFile();
+        List<Catalog> listCatalogChild = new ArrayList<>();
+        if (catalogList == null) {
+            catalogList = new ArrayList<>();
+        }
+        do {
+            int cnt = 1;
+            for (Catalog cat : catalogList) {
+                if (ShopValiDation.checkProductChild(cat, catalogList)) {
+                    listCatalogChild.add(cat);
+                }
+            }
+            for (Catalog cat : listCatalogChild) {
+                System.out.printf("%d. %s", cnt, cat.getCatalogName());
+                cnt++;
+            }
+            System.out.print("Chọn danh mục sản phẩm thuộc về: ");
+            int choiceCatalog = 0;
 
-               if (!checkCatalog) {
-                   productNew.getCatalogList().add(catalogList.get(choiceCatalog-1));
-               } else {
-                   System.err.println("Danh mục đã tồn tại trong sản phẩm");
-               }
-               System.out.println("Bạn có muốn chọn thêm danh mục không: ");
-               System.out.println("1. Có");
-               System.out.println("2. Không");
-               System.out.print("Lựa chọn của bạn : ");
-               int choice2 = 0;
-               do {
-                   if (ShopValiDation.checkNumberInt(scanner, choice2)) {
-                       break;
-                   } else {
-                       System.err.println(ShopMessage.CHECK_NUMBER);
-                   }
-               } while (true);
-               if (choice2!=1){
-                   break;
-               }
-           }else {
-               System.err.println(ShopMessage.CHECK_CATALOG_PRODUCT);;
-           }
-       }while (true);
+            try {
+                choiceCatalog = Integer.parseInt(scanner.nextLine());
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+            }
+
+            if (choiceCatalog > 0 && choiceCatalog < catalogList.size()) {
+                boolean checkCatalog = false;
+                for (Catalog catalogExit : product.getCatalogList()) {
+                    if (catalogExit.getCatalogId() == product.getCatalogList().get(choiceCatalog - 1).getCatalogId()) {
+                        checkCatalog = true;
+                    }
+                }
+
+                if (!checkCatalog) {
+                    productNew.getCatalogList().add(catalogList.get(choiceCatalog - 1));
+                } else {
+                    System.err.println("Danh mục đã tồn tại trong sản phẩm");
+                }
+                System.out.println("Bạn có muốn chọn thêm danh mục không: ");
+                System.out.println("1. Có");
+                System.out.println("2. Không");
+                System.out.print("Lựa chọn của bạn : ");
+                int choice2 = 0;
+                try {
+                    choice2 = Integer.parseInt(scanner.nextLine());
+
+                } catch (NumberFormatException exception) {
+                    System.err.println(ShopMessage.CHECK_NUMBER);
+                }
+
+                if (choice2 != 1) {
+                    break;
+                }
+            } else {
+                System.err.println(ShopMessage.CHECK_CATALOG_PRODUCT);
+                ;
+            }
+        } while (true);
         System.out.println("Trạng thái sản phẩm:");
         System.out.println("1.Đang bán");
         System.out.println("2.Hết hàng");
         System.out.print("Sự lựa chọn của bạn:");
         int choice = 0;
-        ShopValiDation.checkNumberInt(scanner, choice);
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+
+        } catch (NumberFormatException exception) {
+            System.err.println(ShopMessage.CHECK_NUMBER);
+        }
+
         switch (choice) {
             case 1:
                 productNew.setStatusProduct(true);
@@ -290,6 +331,7 @@ public class Productimpl implements IProduct<Product, Integer> {
                 System.err.println(ShopMessage.CHECK_CHOICE1_2);
 
         }
+        exportPriceProduct(productNew);
         System.out.println("Nhập ngày tạo sản phẩm:");
         Date date = new Date();
         productNew.setDateInputProduct(date);
@@ -310,12 +352,25 @@ public class Productimpl implements IProduct<Product, Integer> {
         }
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         String strDate = formatter.format(product.getDateInputProduct());
-        System.out.printf("%-30s%-30s%-20f%-20f%-20f%-30s%",product.getProductId(),product.getProductName(),product.getProductPrice(),product.getProductDiscount(),product.getExportPriceProduct(),product.getTitle());
-        System.out.printf("%-30%-40s%-40s%-40s%-30b%-50s",product.getDescriptionsProduct(),product.getColorList(),product.getSizeList(),product.getCatalogList(),status,strDate);
+        System.out.printf("%-30s%-30s%-20f%-20f%-20f%", product.getProductId(), product.getProductName(), product.getProductPrice(), product.getProductDiscount(), product.getExportPriceProduct());
+        System.out.printf("%-40s%-40s%-40s%-30b%-50s\n", product.getColorList(), product.getSizeList(), product.getCatalogList(), status, strDate);
     }
 
     @Override
     public boolean update(Product product) {
+        List<Product> productList = readFromFile();
+        boolean returnProduct = false;
+        for (int i = 0; i < productList.size(); i++) {
+            if (productList.get(i).getProductId() == product.getProductId()) {
+                productList.set(i, product);
+                returnProduct = true;
+                break;
+            }
+        }
+        boolean result = writeToFile(productList);
+        if (returnProduct && result) {
+            return true;
+        }
         return false;
     }
 
@@ -331,12 +386,13 @@ public class Productimpl implements IProduct<Product, Integer> {
 //                break;
 //            }
         }
-        if (check) {
+        boolean result = writeToFile(productList);
+        if (check && result) {
             System.out.println(ShopMessage.CHECK_DELETE_PRODUCT_TRUE);
-        } else {
-            System.err.println(ShopMessage.CHECK_DELETE_PRODUCT_FASLE);
+            return true;
         }
-        return check;
+        System.err.println(ShopMessage.CHECK_DELETE_PRODUCT_FASLE);
+        return false;
 
     }
 
