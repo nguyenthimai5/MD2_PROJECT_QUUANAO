@@ -16,8 +16,16 @@ import java.util.*;
 public class ProductMenu {
     private static Productimpl productimpl = new Productimpl();
     private static List<Product> productList = productimpl.readFromFile();
+    private static Colorimpl colorimpl = new Colorimpl();
+    private static List<Color> colorList = colorimpl.readFromFile();
+    private static Sizeimpl sizeimpl = new Sizeimpl();
+    private static List<Size> sizeList = sizeimpl.readFromFile();
+    private static Catalogimpl catalogimpl = new Catalogimpl();
+    private static List<Catalog> catalogList = catalogimpl.readFromFile();
 
     public static void productManager(Scanner scanner) {
+        Date date=new Date();
+        Product product=new Product("Prd1","Áo len",7,3,6,"đẹp","Đẹp",colorList,sizeList,catalogList,true,date);
         boolean checkExit = true;
         do {
             System.out.println("********************************** QUẢN LÝ SẢN PHẨM *******************************");
@@ -60,7 +68,7 @@ public class ProductMenu {
     }
 
     public static void displayListColor() {
-        System.out.printf("%-30s%-30s%-20f%-20f%-20f%-40s%-40s%-40s%-30b%-50s", "Mã sản phẩm", "Tên sản phẩm", "Giá sản phẩm", "Giảm giá", "Giá bán", "Danh sách màu", "Danh sách kích cỡ", "Danh mục", "Trạng thái", "Ngày tạo");
+        System.out.printf("%-30s%-30s%-20f%-20f%-20f%-40s%-40s%-40s%-30s%-50s", "Mã sản phẩm", "Tên sản phẩm", "Giá sản phẩm", "Giảm giá", "Giá bán", "Danh sách màu", "Danh sách kích cỡ", "Danh mục", "Trạng thái", "Ngày tạo");
         for (Product pro : productList) {
             productimpl.displayData(pro);
         }
@@ -85,22 +93,26 @@ public class ProductMenu {
     }
 
     public static void deleteProduct(Scanner scanner) {
-        System.out.println("Nhập vào mã sản phẩm muốn xoá:");
-        boolean check = false;
-        int idDelete = 0;
-        try {
-            idDelete = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException ex) {
-            System.err.println(ShopMessage.CHECK_NUMBER);
-            ;
-        }
-        for (Product product : productList) {
-            productimpl.delete(idDelete);
-            check = true;
-            break;
-        }
-        if (!check) {
-            System.err.printf("Mã %f không có trong dữ liệu", idDelete);
+        System.out.print("Nhập mã danh mục mà quý khách muốn xoá:");
+        int idProduct = 0;
+
+        do {
+            String string=scanner.nextLine();
+            try {
+                if (ShopValiDation.checkEmpty(string)){
+                    idProduct = Integer.parseInt(string);
+                    break;
+                }
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+            }
+
+
+        } while (true);
+        boolean check = productimpl.delete(idProduct);
+        if (check) {
+            System.out.println("Xoá thành công");
         }
     }
 
@@ -419,6 +431,7 @@ public class ProductMenu {
                 Date date = new Date();
                 product.setDateInputProduct(date);
             }
+            productimpl.create(product);
         }
     }
 }

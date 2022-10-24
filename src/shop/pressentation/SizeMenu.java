@@ -66,6 +66,7 @@ public class SizeMenu {
             }
 
         });
+        System.out.printf("%-20s%-20s%-20s\n","Mã kích cỡ","Tên kích cỡ","Trạng thái");
         for (Size size : sizeList) {
             sizeimpl.displayData(size);
         }
@@ -80,9 +81,8 @@ public class SizeMenu {
             System.err.println(ShopMessage.CHECK_NUMBER);
         }
         for (int i = 0; i < choice; i++) {
-            System.out.printf("Nhập thông tin cho màu sắc thứ %d", i + 1);
+            System.out.printf("Nhập thông tin cho kích cỡ thứ %d\n", i + 1);
             Size size = sizeimpl.input(scanner);
-            sizeList.add(size);
             sizeimpl.create(size);
 
         }
@@ -151,29 +151,32 @@ public class SizeMenu {
                         System.err.println(ShopMessage.CHECK_CHOICE1_3);
 
                 }
+                sizeimpl.create(size);
             }
         }
     }
 
     public static void deleteSize(Scanner scanner) {
-        System.out.println("Nhập vào mã màu sắc muốn xoá:");
-        boolean check = false;
-        int idDelete = 0;
-        try {
-            idDelete = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException ex) {
-            System.err.println(ShopMessage.CHECK_NUMBER);
-            ;
-        }
-        for (Size size : sizeList) {
-            if (size.getSizeId() == idDelete) {
-                sizeimpl.delete(idDelete);
-                check = true;
-            }
-        }
+        System.out.print("Nhập mã danh mục mà quý khách muốn xoá:");
+        int idSize = 0;
 
-        if (!check) {
-            System.err.printf("Mã %f không có trong dữ liệu", idDelete);
+        do {
+            String string=scanner.nextLine();
+            try {
+                if (ShopValiDation.checkEmpty(string)){
+                    idSize = Integer.parseInt(string);
+                    break;
+                }
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+            }
+
+
+        } while (true);
+        boolean check = sizeimpl.delete(idSize);
+        if (check) {
+            System.out.println("Xoá thành công");
         }
     }
 }

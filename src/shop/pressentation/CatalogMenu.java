@@ -7,6 +7,7 @@ import shop.bussiness.impl.Userimpl;
 import shop.config.ShopMessage;
 import shop.config.ShopValiDation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -18,15 +19,17 @@ public class CatalogMenu {
     public static void catalogManager(Scanner scanner) {
         boolean checkExit = true;
         do {
-            System.out.println("**********************************QUẢN LÝ DANH MỤC*******************************");
-            System.out.println("1.Danh sách danh mục theo cây danh mục");
-            System.out.println("2.Tạo mới danh mục");
-            System.out.println("3.Cập nhật danh mục");
-            System.out.println("4.Xóa danh mục");
-            System.out.println("5.Tìm kiếm danh mục theo tên");
-            System.out.println("6.Thoát");
+            System.out.println("------------------------------------------------------------------------------------------");
+            System.out.println("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUẢN LÝ DANH MỤC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println("|1.Danh sách danh mục theo cây danh mục");
+            System.out.println("|2.Tạo mới danh mục");
+            System.out.println("|3.Cập nhật danh mục");
+            System.out.println("|4.Xóa danh mục");
+            System.out.println("|5.Tìm kiếm danh mục theo tên");
+            System.out.println("|6.Thoát");
+            System.out.println("------------------------------------------------------------------------------------------");
             System.out.println(ShopMessage.CHOICE_NOTIFY);
-            int choice=0;
+            int choice = 0;
             try {
                 choice = Integer.parseInt(scanner.nextLine());
 
@@ -62,30 +65,31 @@ public class CatalogMenu {
     }
 
     public static void displayListCatalog() {
-        System.out.printf("%-20d%-30s%-40s%-20b%-50s\n", "Mã danh mục", "Tên danh mục", "Mô tả danh mục", "Trạng thái danh mục", "Danh mục ");
-
-            for (Catalog cata : catalogList) {
-                catalogimpl.displayData(cata);
+        System.out.printf("%-20s%-30s%-40s%-20s%-50s\n", "Mã danh mục", "Tên danh mục", "Mô tả danh mục", "Trạng thái danh mục", "Danh mục ");
+        for (Catalog cata : catalogList) {
+            catalogimpl.displayData(cata);
         }
     }
-public static void inputData(Scanner scanner){
-    System.out.println("Bạn muốn thêm bao nhiêu danh mục:");
-    int choice=0;
+
+    public static void inputData(Scanner scanner) {
+        System.out.println("Bạn muốn thêm bao nhiêu danh mục:");
+        int choice = 0;
         try {
-            choice=Integer.parseInt(scanner.nextLine());
-        }catch (NumberFormatException exception){
+            choice = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException exception) {
             System.err.println(ShopMessage.CHECK_NUMBER);
         }
         for (int i = 0; i < choice; i++) {
-            System.out.printf("Nhập thông tin cho danh mục thứ %d",i+1);
-            Catalog catalog=catalogimpl.input(scanner);
-            catalogList.add(catalog);
+            System.out.printf("Nhập thông tin cho danh mục thứ %d\n", i + 1);
+            Catalog catalog = catalogimpl.input(scanner);
             catalogimpl.create(catalog);
         }
 
-}
+    }
+
     public static void updateCatalog(Scanner scanner) {
         System.out.println("Nhập tên danh mục muốn cập nhật: ");
+        scanner.nextLine();
         String updateCatalog = scanner.nextLine();
         boolean exitCatalog = false;
         for (Catalog catalog : catalogList) {
@@ -130,7 +134,7 @@ public static void inputData(Scanner scanner){
                 System.out.println("2.Không hoạt động");
                 System.out.println("3.Không cập nhật");
                 System.out.print("Sự lựa chọn của bạn:");
-                int choice=0;
+                int choice = 0;
                 try {
                     choice = Integer.parseInt(scanner.nextLine());
 
@@ -152,7 +156,7 @@ public static void inputData(Scanner scanner){
                         System.err.println(ShopMessage.CHECK_CHOICE1_3);
 
                 }
-                List<Catalog> catalogOn = null;
+                List<Catalog> catalogOn = new ArrayList<>();
                 for (Catalog cat : catalogList) {
                     if (cat.getCatalog() == null && cat.isCatalogStatus()) {
                         catalogimpl.displayListCatalog(cat, catalogList, 0);
@@ -170,7 +174,7 @@ public static void inputData(Scanner scanner){
                 }
 
                 catalog.setCatalog(catalogList.get(choiceCatalog - 1));
-
+                catalogimpl.create(catalog);
                 if (!exitCatalog) {
                     System.out.printf(" Danh mục %s khong co trong du lieu\n", updateCatalog);
                 }
@@ -182,27 +186,24 @@ public static void inputData(Scanner scanner){
     public static void deleteCatalog(Scanner scanner) {
         System.out.print("Nhập mã danh mục mà quý khách muốn xoá:");
         int idCatalog = 0;
-        Boolean check = true;
         do {
-
+            String string=scanner.nextLine();
             try {
-                idCatalog = Integer.parseInt(scanner.nextLine());
-                for (Catalog cat : catalogList) {
-                    if (cat.getCatalogId() == idCatalog) {
-                        catalogimpl.delete(idCatalog);
-                        check = false;
-                        break;
-                    }
+                if (ShopValiDation.checkEmpty(string)){
+                    idCatalog = Integer.parseInt(string);
+                    break;
                 }
+
             } catch (NumberFormatException exception) {
                 System.err.println(ShopMessage.CHECK_NUMBER);
             }
-            if (check) {
-                break;
-            }
-            System.err.println(ShopMessage.CHECK_IDCATALOG);
-        } while (check);
 
+
+        } while (true);
+        boolean check = catalogimpl.delete(idCatalog);
+        if (check) {
+            System.out.println("Xoá thành công");
+        }
     }
 
     public static void searchByName(Scanner scanner) {

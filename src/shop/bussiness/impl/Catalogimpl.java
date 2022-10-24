@@ -114,7 +114,7 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
                 System.err.println(ShopMessage.CHECK_CHOICE1_2);
 
         }
-        List<Catalog> catalogOn = null;
+        List<Catalog> catalogOn = new ArrayList<>();
         for (Catalog cat : catalogList) {
             if (cat.getCatalog() == null && cat.isCatalogStatus()) {
                 displayListCatalog(cat, catalogList, 0);
@@ -142,7 +142,7 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
         if (catalog.isCatalogStatus()) {
             status = "Hoạt động!";
         }
-        System.out.printf("%-20d%-30s%-40s%-20b%-50s\n", catalog.getCatalogId(), catalog.getCatalogName(), catalog.getCatalogDescriptions(), catalog.isCatalogStatus(), catalog.getCatalog());
+        System.out.printf("%-20d%-30s%-40s%-20s%-50s\n", catalog.getCatalogId(), catalog.getCatalogName(), catalog.getCatalogDescriptions(), catalog.isCatalogStatus(), catalog.getCatalog());
     }
 
 

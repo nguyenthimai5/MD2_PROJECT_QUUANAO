@@ -353,7 +353,7 @@ public class Productimpl implements IProduct<Product, Integer> {
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         String strDate = formatter.format(product.getDateInputProduct());
         System.out.printf("%-30s%-30s%-20f%-20f%-20f%", product.getProductId(), product.getProductName(), product.getProductPrice(), product.getProductDiscount(), product.getExportPriceProduct());
-        System.out.printf("%-40s%-40s%-40s%-30b%-50s\n", product.getColorList(), product.getSizeList(), product.getCatalogList(), status, strDate);
+        System.out.printf("%-40s%-40s%-40s%-30s%-50s\n", product.getColorList(), product.getSizeList(), product.getCatalogList(), status, strDate);
     }
 
     @Override
@@ -380,11 +380,11 @@ public class Productimpl implements IProduct<Product, Integer> {
         List<Product> productList = readFromFile();
         boolean check = false;
         for (Product product : productList) {
-//            if (product.getProductId()==id){
-//                product.setStatusProduct(!product.isStatusProduct());
-//                check=true;
-//                break;
-//            }
+            if (Integer.parseInt(product.getProductId())==id){
+                product.setStatusProduct(!product.isStatusProduct());
+                check=true;
+                break;
+            }
         }
         boolean result = writeToFile(productList);
         if (check && result) {

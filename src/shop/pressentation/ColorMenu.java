@@ -17,12 +17,14 @@ public class ColorMenu {
     public static void colorManager(Scanner scanner) {
         boolean checkExit = true;
         do {
-            System.out.println("********************************** QUẢN LÝ MÀU SẮC SẢN PHẨM *******************************");
-            System.out.println("1.Danh sách màu sắc sắp xếp a→b theo tên màu sắc");
-            System.out.println("2.Tạo mới màu sắc");
-            System.out.println("3.Cập nhật thông tin màu sắc");
-            System.out.println("4.Xóa màu sắc");
-            System.out.println("5.Thoát");
+            System.out.println("--------------------------------------------------------------------------------------------");
+            System.out.println("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ QUẢN LÝ MÀU SẮC SẢN PHẨM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println("|1.Danh sách màu sắc sắp xếp a→b theo tên màu sắc");
+            System.out.println("|2.Tạo mới màu sắc");
+            System.out.println("|3.Cập nhật thông tin màu sắc");
+            System.out.println("|4.Xóa màu sắc");
+            System.out.println("|5.Thoát");
+            System.out.println("--------------------------------------------------------------------------------------------");
             System.out.println(ShopMessage.CHOICE_NOTIFY);
             int choice = 0;
             try {
@@ -63,12 +65,17 @@ public class ColorMenu {
                 return o1.getColorName().compareTo(o2.getColorName());
             }
         });
+        System.out.printf("%-20s%-20s%-20s\n","Mã màu","Tên màu","Trạng thái");
         for (Color color : colorList) {
             colorimpl.displayData(color);
         }
     }
 
     public static void inputData(Scanner scanner) {
+        List<Color> colors=colorimpl.readFromFile();
+        if (colors==null){
+            colors=new ArrayList<>();
+        }
         System.out.println("Bạn muốn thêm bao nhiêu danh mục:");
         int choice = 0;
         try {
@@ -77,9 +84,8 @@ public class ColorMenu {
             System.err.println(ShopMessage.CHECK_NUMBER);
         }
         for (int i = 0; i < choice; i++) {
-            System.out.printf("Nhập thông tin cho màu sắc thứ %d", i + 1);
+            System.out.printf("Nhập thông tin cho màu sắc thứ %d\n", i + 1);
             Color color = colorimpl.input(scanner);
-            colorList.add(color);
             colorimpl.create(color);
 
         }
@@ -147,27 +153,31 @@ public class ColorMenu {
                         System.err.println(ShopMessage.CHECK_CHOICE1_3);
 
                 }
+                colorimpl.create(color);
             }
         }
     }
-    public static void deleteColor(Scanner scanner){
-        System.out.println("Nhập vào mã màu sắc muốn xoá:");
-        boolean check=false;
-        int idDelete=0;
-        try {
-            idDelete=Integer.parseInt(scanner.nextLine());
-        }catch (NumberFormatException ex){
-            System.err.println(ShopMessage.CHECK_NUMBER);;
-        }
-        for (Color color:colorList ) {
-            if (color.getColorId()==idDelete){
-                colorimpl.delete(idDelete);
-                check=true;
-                break;
+    public static void deleteColor(Scanner scanner) {
+        System.out.print("Nhập mã màu sắc mà quý khách muốn xoá:");
+        int idColor = 0;
+
+        do {
+            String string = scanner.nextLine();
+            try {
+                if (ShopValiDation.checkEmpty(string)) {
+                    idColor = Integer.parseInt(string);
+                    break;
+                }
+
+            } catch (NumberFormatException exception) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
             }
-        }
-        if (!check){
-            System.err.printf("Mã %f không có trong dữ liệu",idDelete);
+
+
+        } while (true);
+        boolean check = colorimpl.delete(idColor);
+        if (check) {
+            System.out.println("Xoá thành công");
         }
     }
 }

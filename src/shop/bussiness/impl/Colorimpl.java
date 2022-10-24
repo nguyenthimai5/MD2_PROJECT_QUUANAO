@@ -44,6 +44,7 @@ public class Colorimpl implements IColor<Color, Integer> {
         }
         boolean checkValiDateName = true;
         do {
+            System.out.println("Tên màu sắc:");
             String colorNameNew = scanner.nextLine();
             if (ShopValiDation.checkEmpty(colorNameNew)) {
                 if (ShopValiDation.checkLenght(colorNameNew, 4, 30)) {
@@ -99,7 +100,7 @@ public class Colorimpl implements IColor<Color, Integer> {
         if (color.isColorStatus()) {
             colorStatus = "Hoạt động";
         }
-        System.out.printf("%-20d%-20s%-20b", color.getColorId(), color.getColorName(), color.isColorStatus());
+        System.out.printf("%-20d%-20s%-20s\n", color.getColorId(), color.getColorName(), color.isColorStatus());
     }
 
     @Override

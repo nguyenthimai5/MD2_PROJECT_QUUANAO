@@ -1,27 +1,30 @@
 package shop.pressentation;
 
-import shop.bussiness.entity.User;
+import shop.bussiness.entity.*;
 import shop.bussiness.impl.*;
 import shop.config.ShopMessage;
 import shop.config.ShopValiDation;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class ShopRun {
-    private static Catalogimpl catalogimpl = new Catalogimpl();
-    private static Productimpl productimpl = new Productimpl();
-    private static Sizeimpl sizeimpl = new Sizeimpl();
-    private static Colorimpl colorimpl = new Colorimpl();
     private static Userimpl userimpl = new Userimpl();
-
+    private static List<User> userList=userimpl.readFromFile();
+//    Date date=new Date();
+//    User user1 = new User(1,"123","123","123","jjjjjjjjjj",true,date,true,"H@gmail.com","84-0343800644");
+//    boolean user = userimpl.create(user1);
     public static void main(String[] args) {
+
         Scanner scanner = new Scanner(System.in);
-//        User user=new User(1,"Nguyen Mai12","mnai12","mnai12","Nguyễn Thị Ngọc Mai",true,12/23/2022,true,"mainguyen1412@gmail.com","(84)-(09165334)");
         do {
-            System.out.println("**********************CỬA HÀNG M-LEMON **************************");
-            System.out.println("1.Đăng nhập ");
-            System.out.println("2.Đăng ký");
-            System.out.println("3.Thoát");
+            System.out.println("|------------------------------------------------------------------------------");
+            System.out.println("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CỬA HÀNG M-LEMON ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println("|1.Đăng nhập ");
+            System.out.println("|2.Đăng ký");
+            System.out.println("|3.Thoát");
+            System.out.println("-------------------------------------------------------------------------------");
             System.out.print(ShopMessage.CHOICE_NOTIFY);
 
             int choice = 0;
@@ -34,7 +37,7 @@ public class ShopRun {
             System.out.println(ShopMessage.HAPPY_SHOP);
             switch (choice) {
                 case 1:
-                    checkLogin(scanner);
+                    Userimpl.loginH(scanner);
                     break;
                 case 2:
                     userimpl.register(scanner);
@@ -50,19 +53,5 @@ public class ShopRun {
 
     }
 
-    public static void checkLogin(Scanner scanner) {
-        User user = new User();
-        do {
-            if (userimpl.login(scanner)) {
-                if (user.isPermission()) {
-                    UserMenu.manager(scanner);
-                    break;
-                } else {
-                    UserMenu.customer(scanner);
-                    break;
-                }
-            }
-
-        } while (true);
     }
-}
+

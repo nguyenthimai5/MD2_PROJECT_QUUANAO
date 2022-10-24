@@ -1,10 +1,7 @@
 package shop.bussiness.impl;
 
 import shop.bussiness.design.IUser;
-import shop.bussiness.entity.Catalog;
-import shop.bussiness.entity.Product;
-import shop.bussiness.entity.Size;
-import shop.bussiness.entity.User;
+import shop.bussiness.entity.*;
 import shop.config.ShopConstant;
 import shop.config.ShopMessage;
 import shop.config.ShopValiDation;
@@ -18,6 +15,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Userimpl implements IUser<User, Integer> {
+    private static Userimpl userimpl = new Userimpl();
+
     @Override
     public boolean create(User user) {
         List<User> userList = readFromFile();
@@ -111,7 +110,6 @@ public class Userimpl implements IUser<User, Integer> {
                 System.err.println(ShopMessage.CHECK_CHOICE1_2);
 
         }
-        System.out.println("Ngày tạo tài khoản:");
         Date date = new Date();
         userNew.setDate(date);
         System.out.println("Trạng thái kích cỡ:");
@@ -169,7 +167,7 @@ public class Userimpl implements IUser<User, Integer> {
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         String strDate = formatter.format(user.getDate());
         System.out.printf("%-20s%-30s%-20s%-30s%-20s", user.getUserId(), user.getUserName(), user.getPassword(), user.getFullName(), user.isPermission());
-        System.out.printf("%-30s%-30b%-30s%-30s", strDate, status, user.getEmailUser(), user.getPhoneUser());
+        System.out.printf("%-30s%-30s%-30s%-30s\n", strDate, status, user.getEmailUser(), user.getPhoneUser());
 
 
     }
@@ -199,7 +197,11 @@ public class Userimpl implements IUser<User, Integer> {
         boolean check = false;
         for (User user : userList) {
             if (user.getUserId() == id) {
-                user.setUserStatus(!user.isUserStatus());
+                if (user.isUserStatus()){
+                    user.setUserStatus(false);
+                }else {
+                    user.setUserStatus(true);
+                }
                 check = true;
                 break;
             }
@@ -315,6 +317,31 @@ public class Userimpl implements IUser<User, Integer> {
         }
         return false;
     }
+    public static void loginH(Scanner scanner) {
+        do {
+            System.out.print("Tên đăng nhập:");
+            String userName = scanner.nextLine();
+            System.out.println("Mật khẩu:");
+            String password = scanner.nextLine();
+            User user = userimpl.checkLogin(userName, password);
+            if (user != null) {
+                if (user.isUserStatus()) {
+                    if (user.isPermission()) {
+                        UserMenu.manager(scanner);
+                        break;
+                    } else {
+                        UserMenu.customer(scanner);
+                        break;
+                    }
+                }
+            } else {
+                System.err.println(ShopMessage.CHECK_LOGIN);
+                break;
+            }
+        }
+            while (true) ;
+        }
+
 
     @Override
     public boolean changePassWord(Scanner scanner) {
@@ -327,7 +354,7 @@ public class Userimpl implements IUser<User, Integer> {
             userList=new ArrayList<>();
         }
         for (User user : userList) {
-            if (user.getUserName().equalsIgnoreCase(userName) && user.getPassword().equals(password)) {
+            if (user.getUserName().equals(userName) && user.getPassword().equals(password)) {
                 return user;
             }
         }

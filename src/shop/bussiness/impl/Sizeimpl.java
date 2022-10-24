@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Sizeimpl implements ISize<Size,Integer> {
+
     @Override
     public boolean create(Size size) {
         List<Size> sizeList=readFromFile();
@@ -44,6 +45,7 @@ public class Sizeimpl implements ISize<Size,Integer> {
         }
         boolean checkValiDateName = true;
         do {
+            System.out.print("Tên kích cỡ:");
             String sizeNameNew=scanner.nextLine();
             if (ShopValiDation.checkEmpty(sizeNameNew)){
                 if (ShopValiDation.checkLenght(sizeNameNew,1,10)){
@@ -99,7 +101,7 @@ public class Sizeimpl implements ISize<Size,Integer> {
         if (size.isSizeStatus()){
             sizeStatus="Hoạt động";
         }
-        System.out.printf("%-20d%-20s%-20b",size.getSizeId(),size.getSizeName(),size.isSizeStatus());
+        System.out.printf("%-20s%-20s%-20s\n",size.getSizeId(),size.getSizeName(),sizeStatus);
     }
 
 
@@ -113,7 +115,8 @@ public class Sizeimpl implements ISize<Size,Integer> {
                 returnSize=true;
                 break;
             }
-        }boolean result=writeToFile(sizeList);
+        }
+        boolean result=writeToFile(sizeList);
         if (returnSize&&result){
             return true;
         }
