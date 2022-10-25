@@ -89,18 +89,18 @@ public class Colorimpl implements IColor<Color, Integer> {
                 break;
             default:
                 System.err.println(ShopMessage.CHECK_CHOICE1_2);
-
         }
         return colorNew;
     }
 
     @Override
     public void displayData(Color color) {
+        List<Color> colorList = readFromFile();
         String colorStatus = "Không hoạt động";
         if (color.isColorStatus()) {
             colorStatus = "Hoạt động";
         }
-        System.out.printf("%-20d%-20s%-20s\n", color.getColorId(), color.getColorName(), color.isColorStatus());
+        System.out.printf("%-20d%-20s%-20s\n", color.getColorId(), color.getColorName(), colorStatus);
     }
 
     @Override
@@ -126,20 +126,21 @@ public class Colorimpl implements IColor<Color, Integer> {
     public boolean delete(Integer id) {
         List<Color> colorList = readFromFile();
         boolean check = false;
-        for (Color color : colorList) {
+        for (Color color:colorList) {
             if (color.getColorId() == id) {
-                color.setColorStatus(!color.isColorStatus());
+                color.setColorStatus(false);
                 check = true;
                 break;
             }
         }
         boolean result = writeToFile(colorList);
         if (check && result) {
-            System.out.println(ShopMessage.CHECK_DELETE_COLOR_TRUE);
+            System.out.println(ShopMessage.CHECK_STATUS_UPDATE_TRUE);
             return true;
         }
-        System.err.println(ShopMessage.CHECK_DELETE_COLOR_FASLE);
+        System.err.println(ShopMessage.CHECK_STATUS_UPDATE_FASLE);
         return false;
+
 
     }
 

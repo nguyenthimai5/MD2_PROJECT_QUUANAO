@@ -131,7 +131,7 @@ public class Sizeimpl implements ISize<Size,Integer> {
         boolean check=false;
         for (Size size:sizeList) {
             if (size.getSizeId()==id){
-                size.setSizeStatus(!size.isSizeStatus());
+                size.setSizeStatus(false);
                 check=true;
                 break;
             }

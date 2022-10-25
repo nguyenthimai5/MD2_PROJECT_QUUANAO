@@ -14,14 +14,14 @@ public class Product implements Serializable {
     private String descriptionsProduct;
     private List<Color> colorList;
     private List<Size> sizeList;
-    private List<Catalog> catalogList;
+    private Catalog catalog;
     private boolean statusProduct;
     private Date dateInputProduct;
 
     public Product() {
     }
 
-    public Product(String productId, String productName, float productPrice, float productDiscount, float exportPriceProduct, String title, String descriptionsProduct, List<Color> colorList, List<Size> sizeList, List<Catalog> catalogList, boolean statusProduct, Date dateInputProduct) {
+    public Product(String productId, String productName, float productPrice, float productDiscount, float exportPriceProduct, String title, String descriptionsProduct, List<Color> colorList, List<Size> sizeList, Catalog catalog, boolean statusProduct, Date dateInputProduct) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
@@ -31,7 +31,7 @@ public class Product implements Serializable {
         this.descriptionsProduct = descriptionsProduct;
         this.colorList = colorList;
         this.sizeList = sizeList;
-        this.catalogList = catalogList;
+        this.catalog = catalog;
         this.statusProduct = statusProduct;
         this.dateInputProduct = dateInputProduct;
     }
@@ -108,12 +108,12 @@ public class Product implements Serializable {
         this.sizeList = sizeList;
     }
 
-    public List<Catalog> getCatalogList() {
-        return catalogList;
+    public Catalog getCatalog() {
+        return catalog;
     }
 
-    public void setCatalogList(List<Catalog> catalogList) {
-        this.catalogList = catalogList;
+    public void setCatalog(Catalog catalog) {
+        this.catalog = catalog;
     }
 
     public boolean isStatusProduct() {

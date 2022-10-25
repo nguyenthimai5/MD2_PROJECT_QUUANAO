@@ -1,8 +1,10 @@
 package shop.pressentation;
 
 import shop.bussiness.entity.Catalog;
+import shop.bussiness.entity.Product;
 import shop.bussiness.entity.User;
 import shop.bussiness.impl.Catalogimpl;
+import shop.bussiness.impl.Productimpl;
 import shop.bussiness.impl.Userimpl;
 import shop.config.ShopMessage;
 import shop.config.ShopValiDation;
@@ -14,19 +16,19 @@ import java.util.Scanner;
 
 public class CatalogMenu {
     private static Catalogimpl catalogimpl = new Catalogimpl();
-    private static List<Catalog> catalogList = catalogimpl.readFromFile();
+
 
     public static void catalogManager(Scanner scanner) {
         boolean checkExit = true;
         do {
             System.out.println("------------------------------------------------------------------------------------------");
-            System.out.println("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUẢN LÝ DANH MỤC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            System.out.println("|1.Danh sách danh mục theo cây danh mục");
-            System.out.println("|2.Tạo mới danh mục");
-            System.out.println("|3.Cập nhật danh mục");
-            System.out.println("|4.Xóa danh mục");
-            System.out.println("|5.Tìm kiếm danh mục theo tên");
-            System.out.println("|6.Thoát");
+            System.out.println("|                                     QUẢN LÝ DANH MỤC                                   |");
+            System.out.println("|1.Danh sách danh mục theo cây danh mục                                                  |");
+            System.out.println("|2.Tạo mới danh mục                                                                      |");
+            System.out.println("|3.Cập nhật danh mục                                                                     |");
+            System.out.println("|4.Xóa danh mục                                                                          |");
+            System.out.println("|5.Tìm kiếm danh mục theo tên                                                            |");
+            System.out.println("|6.Thoát                                                                                 |");
             System.out.println("------------------------------------------------------------------------------------------");
             System.out.println(ShopMessage.CHOICE_NOTIFY);
             int choice = 0;
@@ -65,13 +67,17 @@ public class CatalogMenu {
     }
 
     public static void displayListCatalog() {
-        System.out.printf("%-20s%-30s%-40s%-20s%-50s\n", "Mã danh mục", "Tên danh mục", "Mô tả danh mục", "Trạng thái danh mục", "Danh mục ");
-        for (Catalog cata : catalogList) {
-            catalogimpl.displayData(cata);
+        List<Catalog> catalogList1 = catalogimpl.readFromFile();
+        for (Catalog cat : catalogList1) {
+            if (cat.getCatalog() == null) {
+
+                catalogimpl.displayListCatalog(cat, catalogList1, 0);
+            }
         }
     }
 
     public static void inputData(Scanner scanner) {
+        List<Catalog> catalogList1 = catalogimpl.readFromFile();
         System.out.println("Bạn muốn thêm bao nhiêu danh mục:");
         int choice = 0;
         try {
@@ -88,14 +94,31 @@ public class CatalogMenu {
     }
 
     public static void updateCatalog(Scanner scanner) {
-        System.out.println("Nhập tên danh mục muốn cập nhật: ");
-        scanner.nextLine();
-        String updateCatalog = scanner.nextLine();
-        boolean exitCatalog = false;
-        for (Catalog catalog : catalogList) {
-            if (catalog.getCatalogName().equals(updateCatalog)) {
-                catalog.getCatalogId();
-                System.out.print("Tên danh mục:");
+        List<Catalog> catalogList = catalogimpl.readFromFile();
+        if (catalogList == null) {
+            catalogList = new ArrayList<>();
+        }
+        System.out.print("Nhập id danh mục bạn muốn cập nhật:");
+        int idCheck = 0;
+        do {
+            try {
+                idCheck = Integer.parseInt(scanner.nextLine());
+                break;
+            } catch (NumberFormatException ex) {
+                System.err.println(ShopMessage.CHECK_NUMBER);
+            }
+        } while (true);
+        boolean checks = false;
+        for (Catalog cat : catalogList) {
+            if (cat.getCatalogId() == idCheck) {
+                checks = true;
+                break;
+            }
+        }
+            if (!checks) {
+                System.err.printf("Không tìm thấy id %d\n", idCheck);
+            } else {
+                System.out.print("Tên danh mục muốn cập nhật:");
                 boolean checkValiDateName = true;
                 do {
                     String catalogName = scanner.nextLine();
@@ -109,7 +132,7 @@ public class CatalogMenu {
 
                             }
                             if (checkValiDateName) {
-                                catalog.setCatalogName(catalogName);
+                                catalogList.get(idCheck - 1).setCatalogName(catalogName);
                                 break;
                             } else {
                                 System.err.println(ShopMessage.CHECK_VALIDATE_NAME_CATALOG);
@@ -117,17 +140,19 @@ public class CatalogMenu {
                         } else {
                             System.err.println(ShopMessage.CHECK_LENGH_NAME_CATALOG);
                         }
+                    } else {
+                        break;
                     }
-                    break;
                 } while (true);
                 System.out.print("Mô tả danh mục:");
                 do {
                     String catalogDescriptions = scanner.nextLine();
                     if (ShopValiDation.checkEmpty(catalogDescriptions)) {
-                        catalog.setCatalogDescriptions(catalogDescriptions);
+                        catalogList.get(idCheck - 1).setCatalogDescriptions(catalogDescriptions);
+                        break;
+                    } else {
                         break;
                     }
-                    break;
                 } while (true);
                 System.out.println("Trạng thái danh mục:");
                 System.out.println("1.Hoạt động");
@@ -141,55 +166,66 @@ public class CatalogMenu {
                 } catch (NumberFormatException exception) {
                     System.err.println(ShopMessage.CHECK_NUMBER);
                 }
-
                 switch (choice) {
                     case 1:
-                        catalog.setCatalogStatus(true);
+                        catalogList.get(idCheck - 1).setCatalogStatus(true);
                         break;
                     case 2:
-                        catalog.setCatalogStatus(false);
+                        catalogList.get(idCheck - 1).setCatalogStatus(false);
                         break;
                     case 3:
-                        catalog.isCatalogStatus();
-                        break;
+                        catalogList.get(idCheck - 1).isCatalogStatus();
                     default:
                         System.err.println(ShopMessage.CHECK_CHOICE1_3);
-
                 }
-                List<Catalog> catalogOn = new ArrayList<>();
+                List<Catalog> listchild = new ArrayList<>();
+                Productimpl productimpl = new Productimpl();
+                List<Product> productList = productimpl.readFromFile();
+                if (productList == null) {
+                    productList = new ArrayList<>();
+                }
+                System.out.println("0.Danh mục gốc");
                 for (Catalog cat : catalogList) {
-                    if (cat.getCatalog() == null && cat.isCatalogStatus()) {
-                        catalogimpl.displayListCatalog(cat, catalogList, 0);
-                        catalogOn.add(cat);
+                    if (cat.isCatalogStatus()) {
+                        boolean check = true;
+                        for (Product pro : productList) {
+                            if (pro.getCatalog().getCatalogId() == cat.getCatalogId()) {
+                                check = false;
+                            }
+                        }
+                        if (check) {
+                            listchild.add(cat);
+                            System.out.printf("%d. %s\n", cat.getCatalogId(), cat.getCatalogName());
+                        }
                     }
-                }
-                System.out.print("Chọn danh mục mà sản phẩm thuộc về:");
-                int choiceCatalog = 0;
 
+                }
+
+
+                System.out.print("Chọn danh mục mà danh mục thuộc về:");
+                int choiceCatalog = 0;
                 try {
                     choiceCatalog = Integer.parseInt(scanner.nextLine());
 
                 } catch (NumberFormatException exception) {
                     System.err.println(ShopMessage.CHECK_NUMBER);
                 }
-
-                catalog.setCatalog(catalogList.get(choiceCatalog - 1));
-                catalogimpl.create(catalog);
-                if (!exitCatalog) {
-                    System.out.printf(" Danh mục %s khong co trong du lieu\n", updateCatalog);
+                if (choiceCatalog == 0) {
+                    catalogList.get(idCheck - 1).setCatalog(null);
+                } else {
+                    catalogList.get(idCheck - 1).setCatalog(catalogList.get(choiceCatalog - 1));
                 }
+                catalogimpl.writeToFile(catalogList);
             }
-            System.out.println(ShopMessage.CHECK_UPDATE);
-        }
-    }
-
+            }
     public static void deleteCatalog(Scanner scanner) {
+        List<Catalog> catalogList = catalogimpl.readFromFile();
         System.out.print("Nhập mã danh mục mà quý khách muốn xoá:");
         int idCatalog = 0;
         do {
-            String string=scanner.nextLine();
+            String string = scanner.nextLine();
             try {
-                if (ShopValiDation.checkEmpty(string)){
+                if (ShopValiDation.checkEmpty(string)) {
                     idCatalog = Integer.parseInt(string);
                     break;
                 }
@@ -207,12 +243,26 @@ public class CatalogMenu {
     }
 
     public static void searchByName(Scanner scanner) {
+        List<Catalog> catalogList = catalogimpl.readFromFile();
         System.out.println("Nhập tên danh mục muốn tìm:");
-        String searchName = scanner.nextLine();
-        for (Catalog cat : catalogList) {
-            if (cat.getCatalogName().trim().contains(searchName)) {
-                catalogimpl.displayData(cat);
+        boolean check = false;
+        do {
+            String searchName = scanner.nextLine();
+            if (ShopValiDation.checkEmpty(searchName)) {
+                for (Catalog cat : catalogList) {
+                    if (cat.getCatalogName().equals(searchName)) {
+                        catalogimpl.displayData(cat);
+                        check = true;
+                        break;
+                    }
+                }
+                if (check) {
+                    break;
+                }
+            } else {
+                System.err.println("Không được để trống!!");
             }
-        }
+        } while (true);
+
     }
 }

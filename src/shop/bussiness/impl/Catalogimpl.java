@@ -2,6 +2,7 @@ package shop.bussiness.impl;
 
 import shop.bussiness.design.ICataLog;
 import shop.bussiness.entity.Catalog;
+import shop.bussiness.entity.Product;
 import shop.bussiness.entity.Size;
 import shop.config.ShopConstant;
 import shop.config.ShopMessage;
@@ -114,14 +115,31 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
                 System.err.println(ShopMessage.CHECK_CHOICE1_2);
 
         }
-        List<Catalog> catalogOn = new ArrayList<>();
-        for (Catalog cat : catalogList) {
-            if (cat.getCatalog() == null && cat.isCatalogStatus()) {
-                displayListCatalog(cat, catalogList, 0);
-                catalogOn.add(cat);
-            }
+        List<Catalog>listchild=new ArrayList<>();
+        Productimpl productimpl=new Productimpl();
+        List<Product> productList=productimpl.readFromFile();
+        if (productList==null){
+            productList=new ArrayList<>();
         }
-        System.out.print("Chọn danh mục mà sản phẩm thuộc về:");
+        System.out.println("0.Danh mục gốc");
+
+        for (Catalog cat : catalogList) {
+            if (cat.isCatalogStatus()) {
+                boolean check=true;
+                for (Product pro :productList ) {
+                    if (pro.getCatalog().getCatalogId() == cat.getCatalogId()) {
+                        check = false;
+                    }
+                }
+                if (check) {
+                    listchild.add(cat);
+                    System.out.printf("%d. %s\n", cat.getCatalogId(), cat.getCatalogName());
+                }
+
+            }
+
+        }
+        System.out.print("Chọn danh mục mà danh mục thuộc về:");
         int choiceCatalog = 0;
         try {
             choiceCatalog = Integer.parseInt(scanner.nextLine());
@@ -129,9 +147,12 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
         } catch (NumberFormatException exception) {
             System.err.println(ShopMessage.CHECK_NUMBER);
         }
+        if (choiceCatalog==0){
+            catalogNew.setCatalog(null);
+        }else {
+            catalogNew.setCatalog(catalogList.get(choiceCatalog-1));
 
-        catalogNew.setCatalog(catalogList.get(choiceCatalog - 1));
-
+        }
 
         return catalogNew;
     }
@@ -142,7 +163,7 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
         if (catalog.isCatalogStatus()) {
             status = "Hoạt động!";
         }
-        System.out.printf("%-20d%-30s%-40s%-20s%-50s\n", catalog.getCatalogId(), catalog.getCatalogName(), catalog.getCatalogDescriptions(), catalog.isCatalogStatus(), catalog.getCatalog());
+        System.out.printf("%-10d.%-30s%-40s\n", catalog.getCatalogId(), catalog.getCatalogName(),status);
     }
 
 
@@ -172,7 +193,7 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
         boolean check = false;
         for (Catalog cat : catalogList) {
             if (cat.getCatalogId() == id) {
-                cat.setCatalogStatus(!cat.isCatalogStatus());
+                cat.setCatalogStatus(false);
                 check = true;
                 break;
             }
@@ -200,11 +221,15 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
         return fileimpl.writeToFile(list, ShopConstant.URL_Catalog);
     }
 
-    public static void displayListCatalog(Catalog root, List<Catalog> catalogList, int count) {
+    public  void displayListCatalog(Catalog root, List<Catalog> catalogList, int count) {
         for (int i = 0; i < count; i++) {
             System.out.printf("\t");
         }
-        System.out.printf("%d.%s\n", root.getCatalogId(), root.getCatalogName());
+        String status = "Không hoạt động!";
+        if (root.isCatalogStatus()) {
+            status = "Hoạt động!";
+        }
+        System.out.printf("%d.%s-%s\n", root.getCatalogId(), root.getCatalogName(),status);
         List<Catalog> listChild = new ArrayList<>();
         for (Catalog catalogs : catalogList) {
             if (catalogs.getCatalog() != null && catalogs.getCatalog().getCatalogId() == root.getCatalogId()) {
@@ -216,7 +241,6 @@ public class Catalogimpl implements ICataLog<Catalog, Integer> {
         }
         for (Catalog cata : listChild) {
             displayListCatalog(cata, catalogList, count);
-
         }
     }
 

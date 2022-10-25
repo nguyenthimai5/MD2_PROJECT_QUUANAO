@@ -48,7 +48,7 @@ public class ShopMessage {
     public static final String CHECK_PHONE = "Số điện thoại không đúng định dạng!";
     public static final String CHECK_NAME_USER = "Tên chủ tài khoản không được để trống!";
     public static final String CHECK_CHOICE1_3 = "Vui lòng chỉ chọn từ 1-->3 !";
-    public static final String CHECK_LOGIN = "Mật khẩu hoặc đăng nhập của bạn không  đúng!!!";
+    public static final String CHECK_LOGIN = "Mật khẩu hoặc tên đăng nhập của bạn không  đúng!!!";
     public static final String CHECK_CHOICE1_6 = "Vui lòng chỉ chọn từ 1-->6 !";
 public static final String CHOICE_NOTIFY="Sự lựa chọn của quý khách:";
 public static final String HAPPY_SHOP="Rất hân hạnh được phục vụ quý khách^~^!!";
